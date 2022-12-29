@@ -11,7 +11,7 @@ const generateToken = (id) => {
 };
 
 // Register user
-const registerUser = asyncHandler(async (req, res) => {
+exports.registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
   //Validateion
   if (!name || !email || !password) {
@@ -56,5 +56,57 @@ const registerUser = asyncHandler(async (req, res) => {
       bio,
       token,
     });
+  }
+});
+
+
+// login
+exports.login = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  // check the fill
+
+  if (!email || !password) {
+    res.status(400);
+    throw new Error("Pelase add email and password");
+  }
+
+  // check if user exsisist
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User not exsits");
+  }
+
+  // user exsist check if password is correct
+  const passwordIsCorrect = bcrypt.compare(password, user.password);
+
+  // generate token
+  const token = generateToken(user._id);
+
+  // Send HTTP-only cookie
+  res.cookie("token", token, {
+    path: "/",
+    httpOnly: true,
+    expires: new DataTransfer(Date.now() + 7 * 1000 * 86400),
+    sameSite: "none",
+    secure: true,
+  });
+
+  if (user && passwordIsCorrect) {
+    const { _id, name, email, photo, phone, bio } = user;
+    res.status(200).json({
+      _id,
+      name,
+      email,
+      photo,
+      phone,
+      bio,
+      token,
+    });
+  }else{
+    res.status(400)
+    throw new Error("Email and password incorrect")
   }
 });

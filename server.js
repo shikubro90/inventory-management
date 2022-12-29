@@ -31,6 +31,10 @@ app.use(errorHandler)
 // port
 const PORT = process.env.port || 8000
 
+//
+mongoose.set('strictQuery', false)
+
+// connect database
 mongoose
   .connect(process.env.database)
   .then(() => {
