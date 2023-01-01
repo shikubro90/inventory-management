@@ -40,7 +40,7 @@ exports.registerUser = asyncHandler(async (req, res) => {
   res.cookie("token", token, {
     path: "/",
     httpOnly: true,
-    expires: new DataTransfer(Date.now() + 7 * 1000 * 86400),
+    expires: new Date(Date.now() + 7 * 1000 * 86400),
     sameSite: "none",
     secure: true,
   });
@@ -58,6 +58,7 @@ exports.registerUser = asyncHandler(async (req, res) => {
     });
   }
 });
+
 
 
 // login
@@ -89,7 +90,7 @@ exports.login = asyncHandler(async (req, res) => {
   res.cookie("token", token, {
     path: "/",
     httpOnly: true,
-    expires: new DataTransfer(Date.now() + 7 * 1000 * 86400),
+    expires: new Date(Date.now() + 7 * 1000 * 86400),
     sameSite: "none",
     secure: true,
   });
@@ -105,8 +106,9 @@ exports.login = asyncHandler(async (req, res) => {
       bio,
       token,
     });
-  }else{
-    res.status(400)
-    throw new Error("Email and password incorrect")
+  } else {
+    res.status(400);
+    throw new Error("Email and password incorrect");
   }
 });
+
