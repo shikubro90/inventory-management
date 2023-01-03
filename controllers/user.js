@@ -5,10 +5,21 @@ const bcrypt = require("bcrypt");
 const Token = require("../modles/token");
 const crypto = require("crypto");
 
+
+// =============================================
+// =============================================
+// =============================================
+
 //Generate Token
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
+
+
+
+// =============================================
+// =============================================
+// =============================================
 
 // Register user
 exports.registerUser = asyncHandler(async (req, res) => {
@@ -61,6 +72,10 @@ exports.registerUser = asyncHandler(async (req, res) => {
 
 
 
+// =============================================
+// =============================================
+// =============================================
+
 // login
 exports.login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -92,7 +107,7 @@ exports.login = asyncHandler(async (req, res) => {
     httpOnly: true,
     expires: new Date(Date.now() + 7 * 1000 * 86400),
     sameSite: "none",
-    secure: true,
+    // secure: true,
   });
 
   if (user && passwordIsCorrect) {
@@ -112,3 +127,42 @@ exports.login = asyncHandler(async (req, res) => {
   }
 });
 
+
+
+// =============================================
+// =============================================
+// =============================================
+
+exports.logout = asyncHandler(async (req,res,next)=>{
+  res.cookie("token", "", {
+    path : "/",
+    httpOnly : true,
+    expires : new Date(0),
+    sameSite : "none"
+    // secure : true
+  })
+  res.status(200).json({message : "Successfully Log Out!"})
+})
+
+
+
+
+// =============================================
+// =============================================
+// =============================================
+
+exports.getuser = async (req, res, next)=>{
+  try{
+    const user = await User.findById(req.user._id)
+    if(user){
+      const {_id, name, email, photo, phone, bio} = user
+      res.status(200).json({
+        _id, name, email, photo, phone, bio
+      })
+    }else{
+      throw new Error("User Not found");
+    }
+  }catch(err){
+    throw new Error(err)
+  }
+}
