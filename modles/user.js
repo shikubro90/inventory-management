@@ -20,7 +20,7 @@ const userSchema = mongoose.Schema(
       type: String,
       require: [true, "Please add a password"],
       minlength: [6, "Password must be up to 6 character"],
-      maxLength: [23, "Password must not be more than 23 character"]
+      // maxLength: [50, "Password must not be more than 50 character"]
     },
     photo: {
       type: String,
@@ -45,7 +45,7 @@ const salt = userSchema.pre("save", async function (next) {
     return next();
   }
   // Hash password
-  const salt = await bcrypt.genSalt(10);
+  const salt = await bcrypt.genSalt(8);
   const hashedPassword = await bcrypt.hash(this.password, salt);
   this.password = hashedPassword;
   next();
