@@ -247,3 +247,12 @@ exports.changePassword = asyncHandler(async (req, res) => {
     throw new Error("Old Password is not correct")
   }
 });
+
+exports.forgetPassword = asyncHandler(async (req,res)=>{
+  const {email} = req.body;
+  const user = await User.findOne({email})
+  if(!user){
+    res.status(404)
+    throw new Error("User does not exist")
+  }
+})
