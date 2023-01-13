@@ -255,4 +255,28 @@ exports.forgetPassword = asyncHandler(async (req,res)=>{
     res.status(404)
     throw new Error("User does not exist")
   }
+  // Delete token if exists in BD
+  let token = await Token.findOne({userId:user._id})
+  if(token){
+    await token.deleteOne();
+  }
+
+  // create reset token 
+  let resetToken = crypto.randomBytes(32).toString("hex")+user.id;
+  console.log("==============>",resetToken);
+
+  // has token
+   const hashToken = crypto.createHash('sha256').update(resetToken).digest('hex')
+  console.log("----------->", hashToken);
+
+  res.send("Forgot pass updated");
+
+  await new Token({
+    userId : user._id,
+    token : hashToken,
+    createdAt: Date.now(),
+    expiresAt : Date.now() + 30 * (60*1000)
+  }).save();
+
+
 })
