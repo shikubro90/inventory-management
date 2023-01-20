@@ -2,7 +2,6 @@ const asyncHandler = require('express-async-handler')
 const Product = require('../modles/product')
 
 // Create products
-
 const createProduct = asyncHandler(async (req, res) => {
   const { name, sku, category, price, quantity, description } = req.body
   // validation
@@ -39,4 +38,17 @@ const createProduct = asyncHandler(async (req, res) => {
 })
 
 
-module.exports = {createProduct}
+// getProducts
+
+const getProducts = asyncHandler(async (req,res)=>{
+    const products = await Product.find({user: req.user.id}).sort("-createdAt");
+    res.status(200).json(products)
+})
+
+
+
+
+
+
+
+module.exports = {createProduct,getProducts}
