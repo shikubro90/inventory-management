@@ -3,10 +3,10 @@ const Product = require('../modles/product')
 
 // Create products
 
-const createProducts = asyncHandler(async (req, res) => {
+const createProduct = asyncHandler(async (req, res) => {
   const { name, sku, category, price, quantity, description } = req.body
   // validation
-  if (name || category || quantity || price || description) {
+  if (!name || !category || !quantity || !price || !description) {
     res.status(400)
     throw new Error('Please fill in all fields')
   }
@@ -39,4 +39,4 @@ const createProducts = asyncHandler(async (req, res) => {
 })
 
 
-module.exports = {createProducts}
+module.exports = {createProduct}
