@@ -87,13 +87,13 @@ exports.login = asyncHandler(async (req, res) => {
   // check if user exsisist
   const user = await User.findOne({ email })
 
-  if (!user) {
+  if (!user) {   
     res.status(400)
-    throw new Error('User not exsits')
+    throw new Error('User not exists')
   }
 
-  // user exsist check if password is correct
-  const passwordIsCorrect = bcrypt.compare(password, user.password)
+  // user exists check if password is correct
+  const passwordIsCorrect = await bcrypt.compare(password, user.password)
 
   // generate token
   const token = generateToken(user._id)
@@ -117,7 +117,7 @@ exports.login = asyncHandler(async (req, res) => {
       phone,
       bio,
       token,
-    })
+    }) 
   } else {
     res.status(400)
     throw new Error('Email and password incorrect')
@@ -126,7 +126,7 @@ exports.login = asyncHandler(async (req, res) => {
 
 // =============================================
 // =============================================
-// =============================================
+// =========================== ==================
 
 exports.logout = asyncHandler(async (req, res, next) => {
   res.cookie('token', '', {

@@ -1,32 +1,29 @@
-const asyncHandler = require("express-async-handler")
-const User = require("../modles/user")
+const asyncHandler = require("express-async-handler");
+const User = require("../modles/user");
 const jwt = require("jsonwebtoken");
 
-const protect = async (req,res,next)=>{
-    try{
-        //if has no token
-        const token = req.cookies.token;
-        if(!token){
-            res.status(401);
-            throw new Error("Not authorize please login")
-        }
-        // verify token
-        const verifyToken = jwt.verify(token,process.env.JWT_SECRET)
-        
-        // get user id from token
-        const user = await User.findById(verifyToken.id).select("-password");
-
-        if(!user){
-            res.status(401);
-            throw new Error("No user found")
-        }
-        req.user = user
-        next()
-
-    }catch(err){
+const protect = asyncHandler(async (req, res, next) => {
+    try {
+      const token = req.cookies.token;
+      if (!token) {
         res.status(401);
-        throw new Error("Not authorized user, please login")
+        throw new Error("Not authorized, please login");
+      }
+      // Verify Token
+      const verified = jwt.verify(token, process.env.JWT_SECRET);
+      // console.log(verified)
+      // Get user id from token
+      const user = await User.findById(verified.id).select("-password");
+      if (!user) {
+        res.status(401);
+        throw new Error("User not found");
+      }
+      req.user = user;
+      next();
+    } catch (error) {
+      res.status(401);
+      throw new Error("Not authorized, please login  from here");
     }
-}
-
-module.exports = protect
+  });
+  
+  module.exports = protect;
