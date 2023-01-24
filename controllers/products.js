@@ -46,7 +46,7 @@ const getProducts = asyncHandler(async (req, res) => {
 // getProducts by ID
 const getProduct = asyncHandler(async (req, res) => {
   const products = await Product.findById(req.params.id)
-  
+
   if (!products) {
     res.status(404)
     throw new Error('Products not found')
@@ -75,4 +75,51 @@ const removeProduct = asyncHandler(async (req, res) => {
   })
 })
 
-module.exports = { createProduct, getProducts, getProduct, removeProduct }
+// updateProduct
+
+const updateProduct = asyncHandler(async (req, res) => {
+  const { name, category, quantity, price, description } = req.body
+  const { id } = req.params
+  const product = await Product.findById(id)
+
+  // if products doesn't
+  if (!product) {
+    res.status(404)
+    throw new Error('Product not found')
+  }
+
+  if (product.user.toString() !== req.user.id) {
+    res.status(404)
+    throw new Error('User not authorized')
+  }
+
+  // Handle image upload
+  let fileData = {}
+  if (req.file) {
+    fileData = {
+      fileName: req.file.originalname,
+      filePath: req.file.filePath,
+      fileType: req.file.fileType,
+      fileSize: req.file.fileSize,
+    }
+  }
+
+  const updatedProducts = await Product.findByIdAndUpdate(
+    { _id: id },
+    {
+      name,
+      category,
+      quantity,
+      price,
+      description,
+      image: Object.keys(fileData).length === 0 ? product?.image : fileData,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  res.status(200).json(updatedProducts)
+})
+
+module.exports = { createProduct, getProducts, getProduct, removeProduct, updateProduct }
